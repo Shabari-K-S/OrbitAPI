@@ -83,7 +83,7 @@ Ensure you have the following installed:
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/yourusername/orbitapi.git](https://github.com/yourusername/orbitapi.git)
+    git clone https://github.com/Shabari-K-S/OrbitAPI.git
     cd orbitapi
     ```
 
@@ -110,6 +110,8 @@ npm run tauri build
 
 Contributions are welcome! Feel free to open an issue to discuss proposed changes or submit a Pull Request.
 
-## 📄 License
+---
 
-Distributed under the MIT License. See `LICENSE` for more information.
+<div align="center">
+<sub>Built with ❤️ by Shabari using Tauri</sub>
+</div>
