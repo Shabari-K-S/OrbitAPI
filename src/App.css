@@ -1,6 +1,76 @@
 /* =========================================
-   1. Theme Variables & Global Reset
+   0. App Layout & Title Bar
    ========================================= */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-dark);
+}
+
+.titlebar {
+  height: 30px;
+  background: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  user-select: none;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Draggable Region */
+.titlebar[data-tauri-drag-region] {
+  cursor: default;
+}
+
+.titlebar-heading {
+  width: 100%;
+}
+
+.titlebar-branding {
+  font-weight: bold;
+  color: var(--text-muted);
+  pointer-events: none; /* Allows dragging through text */
+  margin-left: 15%;
+  text-align: center;
+}
+
+.titlebar-controls {
+  display: flex;
+  height: 100%;
+}
+
+.t-btn {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.t-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+.t-btn.close:hover { background: #e81123; }
+
+/* Main Content takes remaining space */
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Ensure container doesn't force 100vh anymore, rely on parent */
+.container {
+  height: 100%;
+  width: 100%;
+}
+
+/* =========================================
+  1. Theme Variables & Global Reset
+  ========================================= */
 :root {
   --bg-dark: #181818;       /* Main background */
   --bg-sidebar: #202020;    /* Sidebar background */
@@ -13,6 +83,7 @@
   --text-muted: #858585;    /* Secondary text */
   --success: #4ec9b0;       /* Green */
   --error: #f44747;         /* Red */
+  --warning: #e6b450;       /* Orange/Yellow */
 }
 
 body {
@@ -21,12 +92,10 @@ body {
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   height: 100vh;
-  overflow: hidden; /* Prevent full window scroll */
+  overflow: hidden;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 .container {
   display: flex;
@@ -35,14 +104,13 @@ body {
 }
 
 /* =========================================
-   2. Sidebar & Navigation
-   ========================================= */
+    2. Sidebar & Navigation
+    ========================================= */
 .sidebar {
-  /* Width is handled inline by React state */
   background: var(--bg-sidebar);
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; /* Important: Prevents squishing */
+  flex-shrink: 0;
   min-width: 150px;
 }
 
@@ -92,7 +160,6 @@ body {
   padding: 10px 0;
 }
 
-/* Sidebar Footer (Settings Link) */
 .sidebar-footer {
   margin-top: auto;
   border-top: 1px solid var(--border);
@@ -106,8 +173,119 @@ body {
 }
 
 /* =========================================
-   3. Resizers (Draggable Lines)
-   ========================================= */
+    3. Start Screen (Grid Fixes)
+    ========================================= */
+.start-screen {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    animation: fadeIn 0.3s ease;
+    background: var(--bg-dark);
+}
+
+.start-screen h2 {
+    margin-bottom: 30px;
+    font-weight: 300;
+    font-size: 1.5rem;
+}
+
+.protocol-grid {
+    display: grid;
+    /* FIX: Changed from 3 to 4 columns to match Postman layout */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px;
+    max-width: 900px;
+    width: 100%;
+}
+
+.protocol-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.protocol-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    background: #252525;
+}
+
+.card-icon {
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+.protocol-card:hover .card-icon { color: var(--text-main); }
+
+/* Icon specific colors on hover */
+.protocol-card:hover .card-icon.http { color: #8cb4ff; }
+.protocol-card:hover .card-icon.graphql { color: #e535ab; }
+.protocol-card:hover .card-icon.grpc { color: #2487ab; }
+.protocol-card:hover .card-icon.ws { color: #e6b450; }
+.protocol-card:hover .card-icon.socketio { color: #f44747; }
+.protocol-card:hover .card-icon.mqtt { color: #9c64c4; }
+
+.start-footer {
+    margin-top: 40px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* =========================================
+    4. Workspace Layout
+    ========================================= */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0; /* Remove padding to allow tabs to touch edges */
+  gap: 0;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 0;
+  background: var(--bg-dark);
+}
+
+.workspace-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+/* Fix for Request UI container */
+.request-ui {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+}
+
+.pane-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0; 
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* =========================================
+    5. Resizers
+    ========================================= */
 .resizer-x {
   width: 5px;
   background: transparent;
@@ -117,58 +295,25 @@ body {
   z-index: 10;
   flex-shrink: 0; 
 }
-
-.resizer-x:hover, .resizer-x:active {
-  background: var(--accent);
-}
+.resizer-x:hover, .resizer-x:active { background: var(--accent); }
 
 .resizer-pane {
   width: 8px;
-  background: transparent;
+  background: var(--bg-dark); /* Distinct background for separator */
   cursor: col-resize;
   z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 }
-
-.resizer-pane:hover, .resizer-pane:active {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.resizer-pane::after {
-  content: '';
-  width: 1px;
-  height: 100%;
-  background: var(--border);
-}
+.resizer-pane:hover, .resizer-pane:active { background: rgba(255, 255, 255, 0.05); }
 
 /* =========================================
-   4. Main Workspace & Pane Container
-   ========================================= */
-.workspace {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  gap: 15px;
-  height: 100vh;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.pane-container {
-  display: flex;
-  flex-direction: row;
-  gap: 0; 
-  flex: 1;
-  min-height: 0; 
-}
-
-/* =========================================
-   5. URL Bar & Inputs
-   ========================================= */
+    6. URL Bar & Inputs
+    ========================================= */
 .url-bar {
   display: flex;
   gap: 10px;
@@ -176,41 +321,26 @@ body {
   flex-shrink: 0;
 }
 
-/* Custom Method Dropdown */
 .method-select {
   appearance: none;
   -webkit-appearance: none;
-  -moz-appearance: none;
-  
   background-color: var(--bg-input);
   color: var(--text-main);
   border: 1px solid var(--border);
   border-radius: 4px;
-  
   padding: 0 35px 0 15px;
   font-weight: 700;
   font-size: 0.9rem;
   outline: none;
   cursor: pointer;
-  
-  /* Custom Arrow SVG */
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 10px;
-  
   transition: border-color 0.2s;
   min-width: 100px;
 }
-
-.method-select:hover, .method-select:focus {
-  border-color: var(--text-muted);
-}
-
-.method-select option {
-  background-color: var(--bg-sidebar);
-  color: var(--text-main);
-}
+.method-select:hover { border-color: var(--text-muted); }
 
 .url-input {
   flex: 1;
@@ -223,359 +353,203 @@ body {
   font-size: 0.95rem;
   outline: none;
 }
-
-.url-input:focus {
-  border-color: var(--accent);
-}
+.url-input:focus { border-color: var(--accent); }
 
 .action-btn, .send-btn {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: opacity 0.2s;
+  border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 600;
 }
-
-.action-btn {
-  background: #333;
-  color: var(--text-main);
-  border: 1px solid var(--border);
-}
+.action-btn { background: #333; color: var(--text-main); border: 1px solid var(--border); }
 .action-btn:hover { background: #444; }
-
-.send-btn {
-  background: var(--accent);
-  color: white;
-}
+.send-btn { background: var(--accent); color: white; }
 .send-btn:hover { opacity: 0.9; }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* =========================================
-   6. Panels (Request & Response)
-   ========================================= */
+    7. Panels & Lists
+    ========================================= */
 .panel {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-panel);
-  overflow: hidden;
-  min-width: 200px;
+  display: flex; flex-direction: column; background: var(--bg-panel); overflow: hidden; min-width: 200px;
 }
 
 .panel-header {
-  padding: 10px 15px;
-  background: var(--bg-sidebar);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  flex-shrink: 0;
+  padding: 10px 15px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); flex-shrink: 0;
 }
 
-.tabs {
-  display: flex;
-  background: var(--bg-sidebar);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
+.tabs { display: flex; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .tabs button {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  position: relative;
+  background: none; border: none; color: var(--text-muted); padding: 10px 20px; cursor: pointer; font-size: 0.9rem; position: relative;
 }
-
 .tabs button:hover, .tabs button.active { color: var(--text-main); }
-
 .tabs button.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--accent);
+  content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent);
 }
 
-.panel-content {
-  flex: 1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
+.panel-content { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
 .code-editor {
-  flex: 1;
-  background: var(--bg-panel);
-  color: var(--text-main);
-  border: none;
-  padding: 15px;
-  resize: none;
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  outline: none;
+  flex: 1; background: var(--bg-panel); color: var(--text-main); border: none; padding: 15px; resize: none; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9rem; line-height: 1.5; outline: none;
 }
 
-/* =========================================
-   7. Sidebar Lists & Items
-   ========================================= */
-.list-container {
-  padding-bottom: 20px;
-}
-
+/* Sidebar Lists */
+.list-container { padding-bottom: 20px; }
 .list-item {
-  padding: 8px 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-  border-left: 3px solid transparent;
-  color: var(--text-main);
+  padding: 8px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; border-left: 3px solid transparent; color: var(--text-main);
 }
+.list-item:hover { background: #2a2d2e; }
 
-.list-item:hover {
-  background: #2a2d2e;
-}
-
-.collection-group { margin-bottom: 5px; }
-
-.collection-header {
-  padding: 8px 15px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  user-select: none;
-  color: var(--text-main);
-}
+.collection-header { padding: 8px 15px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
 .collection-header:hover { background: #2a2d2e; }
-
 .collection-items { background: rgba(0,0,0,0.2); }
 .sub-item { padding-left: 30px; font-size: 0.85rem; }
+.col-actions { margin-left: auto; display: none; gap: 5px; }
+.collection-header:hover .col-actions { display: flex; }
 
-.new-btn {
-  background: transparent;
-  border: 1px dashed #555;
-  color: var(--text-muted);
-  width: 90%;
-  margin: 10px auto;
-  display: block;
-  padding: 6px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
+.new-btn { background: transparent; border: 1px dashed #555; color: var(--text-muted); width: 90%; margin: 10px auto; display: block; padding: 6px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; }
 .new-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 0 5px;
-}
-.icon-btn:hover { color: var(--error); }
+.icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 0 5px; }
+.icon-btn:hover { color: var(--text-main); }
+.empty-sidebar, .empty-msg { color: var(--text-muted); font-style: italic; text-align: center; padding: 20px; }
 
-.empty-sidebar, .empty-msg, .empty-sub {
-  color: var(--text-muted);
-  font-style: italic;
-  text-align: center;
-  padding: 20px;
-}
-
-/* =========================================
-   8. Utility & Method Tags
-   ========================================= */
 .meta { display: flex; gap: 15px; font-size: 0.85rem; }
 .status-ok { color: var(--success); }
 .status-err { color: var(--error); }
+.response-content pre { margin: 0; padding: 15px; overflow: auto; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9rem; color: #ce9178; }
+.error-msg { color: var(--error); padding: 15px; background: rgba(244, 71, 71, 0.1); }
 
-.response-content pre {
-  margin: 0;
-  padding: 15px;
-  overflow: auto;
-  font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.9rem;
-  color: #ce9178;
-}
+.method-tag { font-size: 0.7rem; font-weight: bold; padding: 3px 6px; border-radius: 3px; min-width: 45px; text-align: center; }
 
-.error-msg {
-  color: var(--error);
-  padding: 15px;
-  background: rgba(244, 71, 71, 0.1);
-}
-
-.method-tag {
-  font-size: 0.7rem;
-  font-weight: bold;
-  padding: 3px 6px;
-  border-radius: 3px;
-  min-width: 45px;
-  text-align: center;
-}
-.GET { color: var(--success); background: rgba(78, 201, 176, 0.15); }
-.POST { color: #dcdcaa; background: rgba(220, 220, 170, 0.15); }
-.PUT { color: #569cd6; background: rgba(86, 156, 214, 0.15); }
-.DELETE { color: var(--error); background: rgba(244, 71, 71, 0.15); }
-.PATCH { color: #c586c0; background: rgba(197, 134, 192, 0.15); }
-
-/* =========================================
-   9. Modals (Custom Overlay)
-   ========================================= */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px);
-}
-
-.modal-content {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border);
-  padding: 20px;
-  border-radius: 8px;
-  width: 350px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.modal-content h3 {
-  margin: 0;
-  color: var(--text-main);
-  font-size: 1.1rem;
-}
-
-.modal-input {
-  background-color: var(--bg-input);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 0.95rem;
-  outline: none;
-}
+/* Modals */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(2px); }
+.modal-content { background-color: var(--bg-panel); border: 1px solid var(--border); padding: 20px; border-radius: 8px; width: 350px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 15px; }
+.modal-content h3 { margin: 0; color: var(--text-main); font-size: 1.1rem; }
+.modal-input { background-color: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 4px; font-size: 0.95rem; outline: none; }
 .modal-input:focus { border-color: var(--accent); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* =========================================
-   10. Settings Page Styles
-   ========================================= */
-.settings-page {
-  padding: 20px 40px;
-  color: var(--text-main);
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-.settings-page h2 {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
-  margin-bottom: 30px;
-}
-
-.settings-section {
-  margin-bottom: 40px;
-}
-
-.settings-section h3 {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  margin-bottom: 15px;
-}
-
-.setting-row {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.color-options {
-  display: flex;
-  gap: 15px;
-}
-
-.color-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
+/* Settings Page */
+.settings-page { padding: 20px 40px; color: var(--text-main); animation: fadeIn 0.2s ease-in-out; }
+.settings-page h2 { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 30px; }
+.settings-section { margin-bottom: 40px; }
+.settings-section h3 { color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; }
+.setting-row { display: flex; flex-direction: column; gap: 10px; }
+.color-options { display: flex; gap: 15px; }
+.color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.2s; }
 .color-swatch:hover { transform: scale(1.1); }
 .color-swatch.selected { border-color: white; box-shadow: 0 0 10px var(--accent); }
+.data-actions { display: flex; gap: 15px; }
 
-/* Data Management Buttons */
-.data-actions {
-  display: flex;
-  gap: 15px;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 /* =========================================
-   11. Responsive Mobile Layout
+    8. Tabs & Navigation (The UI Fixes)
    ========================================= */
-@media (max-width: 1200px) {
-  
-  /* Stack panels vertically */
-  .pane-container {
-    flex-direction: column; 
-  }
-
-  /* Transform the resizer to horizontal bar */
-  .resizer-pane {
-    width: 100%;       
-    height: 12px;       
-    cursor: row-resize; 
-    border-top: 1px solid var(--border);
+.tab-bar-container {
+    display: flex;
+    background: var(--bg-dark); /* Matches header bg */
+    height: 38px;
     border-bottom: 1px solid var(--border);
-    display: flex !important;
-  }
+    flex-shrink: 0;
+    align-items: flex-end; /* Tabs sit on the bottom line */
+    padding-left: 10px; /* Small spacing from sidebar */
+}
 
-  /* Rotate the visual line inside */
-  .resizer-pane::after {
-    width: 40px;      
-    height: 3px;       
-    background: var(--text-muted);
-    border-radius: 2px;
-    opacity: 0.3;
-  }
-  
-  /* Panels adapt to height */
-  .panel {
-    min-width: 100%;
-    min-height: 100px; 
-  }
+.tab-bar {
+    display: flex;
+    flex: 1;
+    overflow-x: auto;
+    height: 100%;
+    scrollbar-width: none;
+    gap: 2px; /* Small gap between tabs */
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* FIX: Adds space between Method, Name, and Close X */
+    padding: 0 12px;
+    min-width: 140px;
+    max-width: 220px;
+    height: 100%;
+    background: transparent;
+    border-top: 2px solid transparent; /* Highlight bar placeholder */
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: background 0.1s, color 0.1s;
+}
+
+.tab-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.tab-item.active {
+    background-color: var(--bg-dark); /* Active tab blends with workspace */
+    color: var(--text-main);
+    border-top-color: var(--accent);
+    border-bottom: 1px solid var(--bg-dark); /* Hides the bottom border to "connect" to workspace */
+    margin-bottom: -1px; /* Pushes it down over the border line */
+}
+
+.method-text {
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 30px;
+}
+.method-text.GET { color: var(--success); }
+.method-text.POST { color: #dcdcaa; }
+.method-text.PUT { color: #569cd6; }
+.method-text.DELETE { color: var(--error); }
+
+.tab-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tab-close {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
+    opacity: 0; /* Hidden until hover */
+    transition: opacity 0.2s;
+}
+
+.tab-item:hover .tab-close { opacity: 1; }
+.tab-close:hover { background-color: rgba(255, 255, 255, 0.2); color: white; }
+
+.new-tab-btn {
+    width: 40px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.new-tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+
+/* Responsive Grid */
+@media (max-width: 1200px) {
+  .pane-container { flex-direction: column; }
+  .resizer-pane { width: 100%; height: 12px; cursor: row-resize; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex !important; }
+  .resizer-pane::after { width: 40px; height: 3px; background: var(--text-muted); border-radius: 2px; opacity: 0.3; }
+  .panel { min-width: 100%; min-height: 100px; }
+  .protocol-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 800px) {
+  .protocol-grid { grid-template-columns: repeat(2, 1fr); }
 }
